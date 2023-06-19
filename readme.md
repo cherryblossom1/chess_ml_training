@@ -7,6 +7,7 @@ This project aims to generate music based on chess games. By combining the moves
 1. Data Collection:
    - Explore the Lichess API or available datasets to gather a large collection of chess games. This will serve as the training data for the ML model.
    - Design a function or script that can efficiently retrieve game data from Lichess and store it locally.
+   - We use 'https://database.lichess.org/' for database
 
 2. PGN Parsing:
    - Extend the existing PGN parsing capabilities to handle the large dataset collected. Ensure the parsing process is optimized for efficiency to handle a high volume of games.
