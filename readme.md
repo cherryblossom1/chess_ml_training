@@ -40,7 +40,15 @@ To start this project, follow these steps:
 2. Begin with Step 1 of the roadmap: Data Collection.
 3. Proceed through each step, implementing the necessary components and refining the model as you progress.
 
-Feel free to adapt the roadmap to suit your specific needs and experiment with different approaches along the way.
+## First Attempt
+1. Taken a Lichess dataset of some 4L games played by random individuals from 'https://database.lichess.org/'
+
+2. The [training](read_game.py) script parses through this dataset and assigns frequencies to individual unique moves from a bounded frequency range. 
+   - This assignment is chosen as per 'dissonance' cost function which is a rough estimate of how melodius consecutive frequencies will sound. There are other measures, but for simplicity we go with this.
+   - The unique move-set along with assigned frequencies is stored in [datafile](unique_moves.txt).
+   - No neural-network based approaches for training. We used brute-force.
+
+3. Once the "training" is completed, testing can be performed using [test](test_game.py). Separate [test directory](pgn_files) is provided to check how each game "sounds".
 
 ## License
 
@@ -50,7 +58,7 @@ Apache License
 Version 2.0, January 2004
 http://www.apache.org/licenses/
 
-Copyright 2023 Parth Mehta and ChatGPT
+Copyright July 2023 Parth Mehta and ChatGPT
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
