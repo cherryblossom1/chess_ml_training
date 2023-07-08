@@ -18,15 +18,16 @@ def reverb(R,alpha,x):
     y = lfilter(b,a,x)
     return y
 
-def guitar_filt(freq,samples,x):
-    a = np.hstack([1,np.zeros(samples),[-0.5,-0.5]])
+def guitar_filt(freq,Fs,x):
+    delay = int(Fs/freq+0.5)
+    decay=0.1
+    a = np.hstack([1,np.zeros(delay-3),-decay,decay-1])
     y = lfilter([1],a,x)
     return y
 
 # create tone based on frequency
 def create_detuned_pulse(freq, dur, Fs, A, num_oscillators, minor):
     # Generate multiple detuned pulse wave oscillators
-    tones = []
     if num_oscillators==2:
         detune_factor = [1,3/2]
     elif num_oscillators==3:
@@ -36,7 +37,8 @@ def create_detuned_pulse(freq, dur, Fs, A, num_oscillators, minor):
     else:
         detune_factor = [1]
     
-    offset=400                          # offset in milliseconds
+    offset=40                          # offset in milliseconds
+    tones = np.array([])
     for i in range(num_oscillators):
         detuned_freq = freq*detune_factor[i]                            # Generate harmonics
         
@@ -50,7 +52,7 @@ def create_detuned_pulse(freq, dur, Fs, A, num_oscillators, minor):
         
         # turn into guitar sound
         #pulse = guitar_filt(detuned_freq,samples,np.tile(triagTable, cycles))
-        pulse = guitar_filt(detuned_freq,samples,impulse)
+        pulse = guitar_filt(detuned_freq,Fs,impulse)
         #pulse = np.tile(triagTable, cycles)
         
         # add reverb
@@ -60,18 +62,18 @@ def create_detuned_pulse(freq, dur, Fs, A, num_oscillators, minor):
         pulse = sdelay(Fs/offset*i,pulse)
         
         # combine
-        tones.append(pulse)
+        tones = np.hstack((tones,pulse))
     
     # Combine the detuned oscillators
-    tone = np.zeros(np.max([i.shape for i in tones]))
-    for i in range(num_oscillators):
-        tone[:tones[i].shape[0]] += tones[i]
+    #tone = np.zeros(np.max([i.shape for i in tones]))
+    #for i in range(num_oscillators):
+        #tone[:tones[i].shape[0]] += tones[i]
     
-    return tone
+    return tones
 
 # Create tune based on passed frequencies
 def create_tune(freq_mat,Fs):
-    dur=350
+    dur=250
     tune=[]
     tone_dur = np.zeros(len(freq_mat))
     for ind,tune_freq in enumerate(freq_mat):
@@ -97,7 +99,7 @@ def create_sound(tune,Fs):
 
 Fs=44100
 # open game and detect moves
-pgn_test = open('./pgn_files/chess_game8.pgn', encoding='utf-8')
+pgn_test = open('./pgn_files/chess_game5.pgn', encoding='utf-8')
 game = pgn.read_game(pgn_test)
 board = game.board()
 moves = list(game.mainline_moves())
@@ -115,12 +117,12 @@ with open('unique_moves.txt','r') as file:
         move_freq_dict[move] = float(freq)
 
 freq_moves = [move_freq_dict[key] for key in pgn_moves]
-tune = create_tune(freq_moves,Fs)
-sound = create_sound(tune[0],Fs)
+tune,tune_dur = create_tune(freq_moves,Fs)
+sound = create_sound(tune,Fs)
 if sound is not None:
     print('playing audio...')
     sound.play()
-    pygame.time.wait(int(np.sum(tune[1])))  # Delay to allow sound to play
+    pygame.time.wait(int(np.sum(tune_dur)))  # Delay to allow sound to play
 
 
 

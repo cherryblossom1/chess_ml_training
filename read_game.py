@@ -39,10 +39,10 @@ with open(unique_moves_file,'r') as file:
 
 # generate frequencies
 base_freq = 440
-freq_mat = base_freq*2.0**(np.arange(-18,18)/12)
+freq_mat = base_freq*2.0**(np.arange(-12,25)/12)
 
 # read N games
-#Nread=5000
+#Nread=5
 read_count=0
 current_game = ''
 moves_dataset = []
