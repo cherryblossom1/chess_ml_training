@@ -78,7 +78,7 @@ unique_moves = list(move_freq_dict.keys())
 # parse through given dataset to obtain frequency assignment for minimum dissonance
 min_dissonance=90
 move_frequencies = move_freq_dict
-Nruns=100
+Nruns=5
 for game_number in range(Nread):
     run_count=0
     while(run_count < Nruns):
@@ -87,6 +87,7 @@ for game_number in range(Nread):
         dissonance = calculate_dissonance(freq_moves)
         if(dissonance < min_dissonance):
             # Update move-frequency mappings
+            print(f'unique move file updated with current dissonance {dissonance}')
             with open(unique_moves_file,'w') as file:
                 for move,freq in move_frequencies.items():
                     file.write(f'{move}:{freq}\n')
@@ -95,5 +96,6 @@ for game_number in range(Nread):
         else:
             # Assign frequencies randomly to unique moves
             move_frequencies = assign_random_freq(unique_moves,freq_mat)
+            print('frequency assignment updated')
             run_count += 1
     print(f'Game {game_number+1} analysed..')
